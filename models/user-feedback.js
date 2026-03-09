@@ -1,34 +1,31 @@
 const { Sequelize, Datatypes } = require("sequelize");
-const { Notes } = require("../models");
-
 module.exports = (Sequelize, Datatypes) => {
-  const UserDetails = Sequelize.define("UserDetails", {
+  const UserFeedback = Sequelize.define("UserFeedback", {
     id: {
       type: Datatypes.STRING,
-      primaryKey: true,
-      allowNull: false,
-    },
-    username: {
-      type: Datatypes.STRING,
       allowNull: false,
       primaryKey: true,
     },
-    email: {
+
+    feedback: {
       type: Datatypes.STRING,
       allowNull: false,
     },
-    password: {
+
+    topic: {
       type: Datatypes.STRING,
       allowNull: false,
     },
-    bio: {
+
+    tutor: {
       type: Datatypes.STRING,
-      allowNull: true,
+      allowNull: false,
+    },
+
+    page: {
+      type: Datatypes.STRING,
+      allowNull: false,
     },
   });
-  UserDetails.associate = (models) => {
-    UserDetails.hasMany(models.Notes);
-    UserDetails.hasMany(models.UserFeedback);
-  };
-  return UserDetails;
+  return UserFeedback;
 };

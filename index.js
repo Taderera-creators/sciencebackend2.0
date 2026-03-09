@@ -10,6 +10,7 @@ const logRouter = require("./routes/log-in");
 const matterRouter = require("./routes/matter");
 const tutorDetails = require("./routes/tutor-details");
 const tutorTopics = require("./routes/tutor-topics");
+const userFeedbackRouter = require("./routes/user-feedback");
 app.use(express.json());
 app.use(cors());
 
@@ -20,6 +21,7 @@ app.use("/matter", matterRouter);
 app.use("/notes", notesRouter);
 app.use("/tutor-topics", tutorTopics);
 app.use("/tutor-details", tutorDetails);
+app.use("/user-feedback", userFeedbackRouter);
 db.sequelize.sync().then(() => {
   app.listen(PORT, () =>
     console.log(`Server running at port http://localhost:${PORT}`),

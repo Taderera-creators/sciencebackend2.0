@@ -3,8 +3,10 @@ const { Matter, Sequelize, sequelize } = require("../models");
 const { Notes } = require("../models");
 const { UserDetails } = require("../models");
 const { v4 } = require("uuid");
+const { ERRORS } = require("../utils/errors");
 module.exports = {
   //always start with req
+
   post: async (req, res) => {
     const email = req.name.email;
 
@@ -25,8 +27,9 @@ module.exports = {
         imgsrc: imgsrc,
         UserDetailId: userDetails[0]?.id,
       });
+      res.status(200).json({ msg: ERRORS.OK });
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
     }
   },
 
@@ -36,26 +39,30 @@ module.exports = {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 1;
 
-    const totalPages = await Notes.count({
-      where: {
-        topic: topic,
-      },
-    });
+    try {
+      const totalPages = await Notes.count({
+        where: {
+          topic: topic,
+        },
+      });
 
-    const notes = await Notes.findAll({
-      limit: limit,
-      offset: page * limit,
-      where: {
-        UserDetailId: tutorId,
-        topic: topic,
-      },
-    });
+      const notes = await Notes.findAll({
+        limit: limit,
+        offset: page * limit,
+        where: {
+          UserDetailId: tutorId,
+          topic: topic,
+        },
+      });
 
-    const getData = {
-      page: page + 1,
-      totalPages,
-      notes,
-    };
-    res.json({ getData });
+      const getData = {
+        page: page + 1,
+        totalPages,
+        notes,
+      };
+      res.status(200).json({ getData });
+    } catch (error) {
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
+    }
   },
 };

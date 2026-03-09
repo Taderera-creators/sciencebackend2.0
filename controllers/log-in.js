@@ -1,37 +1,38 @@
-const { where } = require("sequelize");
+const { where, EagerLoadingError } = require("sequelize");
 const { UserDetails } = require("../models");
 const { v4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { ERRORS } = require("../utils/errors");
 module.exports = {
   post: async (req, res) => {
-    const { Email, Password } = req.body;
+    const { email, password } = req.body;
     try {
       let user = await UserDetails.findOne({
-        Email,
+        email,
       });
+
       if (!user) {
-        console.log("error");
-        return res.status(400);
+        return res.status(400).json({ msg: ERRORS.USER_NOT_FOUND });
       } else {
-        await bcrypt.compare(Password, user.Password).then((match) => {
+        await bcrypt.compare(password, user.password).then((match) => {
           if (!match) {
-            console.log("error");
-            return res.status(400);
+            return res.status(400).json({ msg: ERRORS.USER_NOT_FOUND });
           } else {
             console.log("done");
             const accessToken = jwt.sign(
-              { Email },
+              { email },
               "69a6ffae-6664-4dbb-8e5f-cd62ab6c98e6",
             );
+
             return res.status(200).json({ accessToken });
           }
         });
 
-        // await LogIn.create({ Email, Password });
+        // await LogIn.create({ email, password });
       }
     } catch (error) {
-      res.status(500);
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
     }
   },
 };

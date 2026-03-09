@@ -3,11 +3,21 @@ const { UserDetails } = require("../models");
 const { v4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { ERRORS } = require("../utils/errors");
 module.exports = {
   get: async (req, res) => {
-    const getPost = await UserDetails.findAll();
+    try {
+      const { email } = req.name;
+      const getPost = await UserDetails.findAll({
+        where: {
+          email,
+        },
+      });
 
-    res.json(getPost);
+      res.status(200).json({ getPost });
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   post: async (req, res) => {
@@ -22,7 +32,7 @@ module.exports = {
       if (user[0]?.id) {
         console.log("already exists");
 
-        return res.status(400);
+        return res.status(400).json({ msg: ERRORS.USER_ALREADY_EXISTS });
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -41,7 +51,7 @@ module.exports = {
         res.status(200).json({ accessToken });
       }
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
     }
   },
 
@@ -58,8 +68,10 @@ module.exports = {
           },
         },
       );
+
+      res.status(200).json({ msg: ERRORS.OK });
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
     }
   },
 };

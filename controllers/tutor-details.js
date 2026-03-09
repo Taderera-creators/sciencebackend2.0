@@ -4,6 +4,7 @@ const { Notes } = require("../models");
 const { v4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { ERRORS } = require("../utils/errors");
 module.exports = {
   get: async (req, res) => {
     // const { id } = req.params;
@@ -18,9 +19,9 @@ module.exports = {
         ],
       });
 
-      res.json(getPost);
+      res.status(200).json({ getPost });
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ msg: ERRORS.SERVER_ERROR });
     }
   },
 };
